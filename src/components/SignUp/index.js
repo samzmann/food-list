@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
 import * as ROUTES from '../../constants/routes'
 import { withFirebase } from '../Firebase'
@@ -83,11 +83,5 @@ const SignUpForm = compose(
   withRouter,
   withFirebase,
 )(SignUpFormBase)
-
-const SignupLink = () => (
-  <p>
-    Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
-  </p>
-)
 
 export default SignUp
