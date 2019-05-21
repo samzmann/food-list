@@ -7,44 +7,18 @@ import SignUpPage from '../SignUp'
 import Profile from '../Profile'
 
 import * as ROUTES from '../../constants/routes'
-import {withFirebase} from '../Firebase'
+import { withAuthentication } from '../Session'
 
-class App extends React.Component{
-  constructor(props) {
-    super(props)
-    this.state = {
-      authUser: null,
-    }
-  }
+const App = () => (
+  <Router>
+    <Navigation />
 
-  componentDidMount() {
-    this.authListener = this.props.firebase.auth.onAuthStateChanged(authUser => {
-      console.log('auth state changed:', authUser)
-      authUser
-        ? this.setState({ authUser })
-        : this.setState({ authUser: null })
-    })
-  }
+    <hr />
 
-  componentWillUnmount() {
-    this.authListener()
-  }
+    <Route exact path={ROUTES.SIGN_IN} component={SignInPage} />
+    <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+    <Route path={ROUTES.PROFILE} component={Profile} />
+  </Router>
+)
 
-  render() {
-    const { authUser } = this.state
-
-    return (
-      <Router>
-        <Navigation authUser={authUser} />
-
-        <hr />
-
-        <Route exact path={ROUTES.SIGN_IN} component={SignInPage} />
-        <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
-        <Route path={ROUTES.PROFILE} component={Profile} />
-      </Router>
-    )
-  }
-}
-
-export default withFirebase(App)
+export default withAuthentication(App)
