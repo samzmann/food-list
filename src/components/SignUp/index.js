@@ -12,6 +12,7 @@ const SignUp = () => (
 )
 
 const INITIAL_STATE = {
+  username: '',
   email: '',
   password: '',
   error: null,
@@ -24,13 +25,28 @@ class SignUpFormBase extends React.Component {
   }
 
   onSubmit = event => {
-    const { email, password } = this.state
+    const { username, email, password } = this.state
+    const { firebase } = this.props
 
-    this.props.firebase
+    firebase
       .doCreateUserWithEmailAndPassword(email, password)
       .then(authUser => {
         console.log('sign up successful!', authUser)
         this.setState({...INITIAL_STATE})
+
+        firebase.createUser({
+          email,
+          username,
+          restaurants: [],
+          reviews: [],
+        })
+          .then(doc => {
+            console.log('account created!', doc.data())
+          })
+          .catch(err => {
+            console.log('error creating account:', err)
+          })
+
         this.props.history.push(ROUTES.PROFILE)
       })
       .catch(error => {
@@ -47,12 +63,19 @@ class SignUpFormBase extends React.Component {
 
   render() {
 
-    const { email, password, error } = this.state
+    const { username, email, password, error } = this.state
 
-    const isInvalid = email === '' || password === ''
+    const isInvalid = username === '' || email === '' || password === ''
 
     return (
       <form onSubmit={this.onSubmit}>
+        <input
+          name="username"
+          value={username}
+          onChange={this.onChange}
+          type="text"
+          placeholder="Username"
+        />
         <input
           name="email"
           value={email}
