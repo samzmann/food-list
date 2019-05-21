@@ -1,9 +1,16 @@
 import React from 'react'
 
+import { AuthUserContext, withAuthorization } from '../Session'
+
 const Profile = () => (
-    <div>
+  <AuthUserContext.Consumer>
+    {authUser => (
+      <div>
         <h3>Profile</h3>
-    </div>
+        <p>Account: {authUser.email}</p>
+      </div>
+    )}
+  </AuthUserContext.Consumer>
 )
 
-export default Profile
+export default withAuthorization(Profile)
