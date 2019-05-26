@@ -36,7 +36,7 @@ class Firebase {
 
     // *** User API ***
 
-    createUser = user => this.db.collection('users').add(user)
+    createUser = (uid, user) => this.db.collection('users').doc(uid).set(user)
 
     getUser = uid => this.db.collection('users').doc(uid).get()
 

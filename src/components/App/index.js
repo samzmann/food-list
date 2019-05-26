@@ -12,7 +12,10 @@ import Profile from '../Profile'
 import * as ROUTES from '../../constants/routes'
 import { withAuthentication } from '../Session'
 
-const store = createStore(rootReducer)
+const store = createStore(
+  rootReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+)
 
 const App = () => (
     <Provider store={store}>
