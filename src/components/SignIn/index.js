@@ -1,8 +1,10 @@
 import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import { compose } from 'recompose'
+import { connect } from 'react-redux'
 import { withFirebase } from '../Firebase'
 import * as ROUTES from '../../constants/routes'
+import { setUserFromDB } from '../../interactions/actions/user'
 
 const SignIn = () => (
   <div>
@@ -26,13 +28,25 @@ class SignInFormBase extends React.Component {
 
   onSubmit = event => {
     const { email, password } = this.state
+    const { firebase, setUser } = this.props
 
-    this.props.firebase
-      .doSignInWithEmailAndPassword(email, password)
+    firebase.doSignInWithEmailAndPassword(email, password)
       .then(authUser => {
         console.log('login successful!', authUser)
-        this.setState({ ...INITIAL_STATE })
-        this.props.history.push(ROUTES.PROFILE)
+        firebase.getUser(authUser.user.uid)
+          .then(user => {
+            setUser(user.data())
+            this.setState({ ...INITIAL_STATE })
+            this.props.history.push(ROUTES.PROFILE)
+          })
+          .catch(err => {
+            console.log(err)
+            this.setState({ err })
+          })
+      })
+      .catch(err => {
+        console.log(err)
+        this.setState({ err })
       })
 
     event.preventDefault()
@@ -74,7 +88,12 @@ class SignInFormBase extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  setUser: user => dispatch(setUserFromDB(user))
+})
+
 const SignInForm = compose(
+  connect(null, mapDispatchToProps),
   withRouter,
   withFirebase,
 )(SignInFormBase)
