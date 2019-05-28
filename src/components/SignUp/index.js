@@ -1,9 +1,14 @@
-import { connect } from 'react-redux'
-import { setUserFromDB } from '../../interactions/actions/user'
-import SignUp from './SignUp'
+import React from 'react'
+import SignUpForm from './SignUpForm'
 
-const mapDispatchToProps = dispatch => ({
-  setUser: user => dispatch(setUserFromDB(user)),
-})
+const SignUp = (props) => {
+  const { setUser } = props
+  return (
+    <div>
+      <h3>Sign up</h3>
+      <SignUpForm />
+    </div>
+  )
+}
 
-export default connect(null, mapDispatchToProps)(SignUp)
+export default SignUp

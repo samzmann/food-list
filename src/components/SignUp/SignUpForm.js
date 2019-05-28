@@ -1,18 +1,10 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
-import * as ROUTES from '../../constants/routes'
+import {connect} from 'react-redux'
 import { withFirebase } from '../Firebase'
-
-const SignUp = (props) => {
-  const { setUser } = props
-  return (
-    <div>
-      <h3>Sign up</h3>
-      <SignUpForm setUser={setUser}/>
-    </div>
-  )
-}
+import * as ROUTES from '../../constants/routes'
+import { setUserFromDB } from '../../interactions/actions/user'
 
 const INITIAL_STATE = {
   username: '',
@@ -21,7 +13,7 @@ const INITIAL_STATE = {
   error: null,
 }
 
-class SignUpFormBase extends React.Component {
+class SignUpForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {...INITIAL_STATE}
@@ -49,20 +41,20 @@ class SignUpFormBase extends React.Component {
                 setUser(user.data())
                 this.props.history.push(ROUTES.PROFILE)
               })
-              .catch(err => {
-                console.log(err)
-                this.setState({ err })
+              .catch(error => {
+                console.log(error)
+                this.setState({ error })
               })
 
           })
-          .catch(err => {
-            console.log(err)
-            this.setState({ err })
+          .catch(error => {
+            console.log(error)
+            this.setState({ error })
           })
       })
-      .catch(err => {
-        console.log(err)
-        this.setState({ err })
+      .catch(error => {
+        console.log(error)
+        this.setState({ error })
       })
 
     event.preventDefault()
@@ -104,16 +96,19 @@ class SignUpFormBase extends React.Component {
         </button>
 
         {error &&
-          <p>{error.message}</p>
+        <p>{error.message}</p>
         }
       </form>
     )
   }
 }
 
-const SignUpForm = compose(
+const mapDispatchToProps = dispatch => ({
+  setUser: user => dispatch(setUserFromDB(user)),
+})
+
+export default compose(
+  connect(null, mapDispatchToProps),
   withRouter,
   withFirebase,
-)(SignUpFormBase)
-
-export default SignUp
+)(SignUpForm)
