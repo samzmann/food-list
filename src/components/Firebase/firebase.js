@@ -40,6 +40,10 @@ class Firebase {
 
     getUser = uid => this.db.collection('users').doc(uid).get()
 
+    // *** Reviews API ***
+
+    createReview = review => this.db.collection('reviews').add(review)
+
 }
 
 export default Firebase

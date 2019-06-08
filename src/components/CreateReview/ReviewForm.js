@@ -1,11 +1,16 @@
 import React from 'react'
+import { withRouter } from 'react-router-dom'
 import moment from 'moment'
+import { compose } from 'recompose'
+import { withFirebase } from '../Firebase'
 
 const INITIAL_STATE = {
   title: '',
   restaurantName: '',
   date: moment().format('YYYY-MM-DD'),
   description: '',
+  loading: false,
+  error: null,
 }
 
 class ReviewForm extends React.Component {
@@ -18,13 +23,42 @@ class ReviewForm extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
-  render() {
+  onSubmit = (event) => {
+    event.preventDefault()
+
     const { title, restaurantName, date, description } = this.state
+    const { firebase, authUser } = this.props
+
+    this.setState({ loading: true, error: null })
+
+    const newReview = {
+      userId: authUser.uid,
+      title,
+      restaurantName,
+      date,
+      description
+    }
+
+    firebase.createReview(newReview)
+      .then(doc => {
+        console.log(doc)
+        this.setState({ ...INITIAL_STATE })
+      })
+      .catch(error => {
+        console.log(error)
+        this.setState({ loading: false, error: 'There was some sort of error 😵' })
+      })
+  }
+
+  render() {
+    const { title, restaurantName, date, description, error } = this.state
     const isInvalid = title === '' || restaurantName === '' || description === ''
 
-    console.log(this.state)
     return(
-      <form style={{ flex: 1, flexDirection: 'column' }}>
+      <form
+        onSubmit={this.onSubmit}
+        style={{ flex: 1, flexDirection: 'column' }}
+      >
 
         <label>Title</label>
         <input
@@ -66,10 +100,17 @@ class ReviewForm extends React.Component {
           Sign In
         </button>
 
+        {error &&
+          <p>{error}</p>
+        }
+
       </form>
     )
   }
 
 }
 
-export default ReviewForm
+export default compose(
+  withRouter,
+  withFirebase,
+)(ReviewForm)
