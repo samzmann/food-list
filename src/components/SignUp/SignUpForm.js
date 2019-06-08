@@ -103,12 +103,12 @@ class SignUpForm extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  setUser: user => dispatch(setUserFromDB(user)),
-})
+// const mapDispatchToProps = dispatch => ({
+//   setUser: user => dispatch(setUserFromDB(user)),
+// })
 
 export default compose(
-  connect(null, mapDispatchToProps),
+  // connect(null, mapDispatchToProps),
   withRouter,
   withFirebase,
 )(SignUpForm)

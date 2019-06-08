@@ -1,8 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
-import rootReducer from '../../interactions/reducers'
+
+import { UserProvider } from '../../state/user'
 
 import Navigation from '../Navigation'
 import SignInPage from '../SignIn'
@@ -13,24 +12,21 @@ import CreateReview from '../CreateReview'
 import * as ROUTES from '../../constants/routes'
 import { withAuthentication } from '../Session'
 
-const store = createStore(
-  rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-)
+const App = () => {
+  return (
+    <UserProvider>
+      <Router>
+        <Navigation />
 
-const App = () => (
-    <Provider store={store}>
-        <Router>
-            <Navigation />
+        <hr />
 
-            <hr />
-
-            <Route exact path={ROUTES.SIGN_IN} component={SignInPage} />
-            <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
-            <Route path={ROUTES.PROFILE} component={Profile} />
-            <Route path={ROUTES.CREATE_REVIEW} component={CreateReview} />
-        </Router>
-    </Provider>
-)
+        <Route exact path={ROUTES.SIGN_IN} component={SignInPage} />
+        <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+        <Route path={ROUTES.PROFILE} component={Profile} />
+        <Route path={ROUTES.CREATE_REVIEW} component={CreateReview} />
+      </Router>
+    </UserProvider>
+  )
+}
 
 export default withAuthentication(App)

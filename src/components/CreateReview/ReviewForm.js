@@ -57,7 +57,7 @@ class ReviewForm extends React.Component {
     return(
       <form
         onSubmit={this.onSubmit}
-        style={{ flex: 1, flexDirection: 'column' }}
+        style={{ display: 'flex', flex: 1, flexDirection: 'column' }}
       >
 
         <label>Title</label>

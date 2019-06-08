@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
-import { connect } from 'react-redux'
 import * as ROUTES from '../../constants/routes'
-import { setUserFromDB } from '../../interactions/actions/user'
 import { withFirebase } from '../Firebase'
+import { UserContext } from '../../state/user'
 
 const INITIAL_STATE = {
   email: '',
@@ -12,15 +11,17 @@ const INITIAL_STATE = {
   error: null,
 }
 
-class SignInForm extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { ...INITIAL_STATE }
-  }
+const SignInForm = (props) => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const { user, setUser } = useContext(UserContext)
 
-  onSubmit = event => {
-    const { email, password } = this.state
-    const { firebase, setUser } = this.props
+  console.log('email', email)
+
+
+  const onSubmit = event => {
+    const { firebase, history } = props
 
     firebase.doSignInWithEmailAndPassword(email, password)
       .then(authUser => {
@@ -28,64 +29,54 @@ class SignInForm extends React.Component {
         firebase.getUser(authUser.user.uid)
           .then(user => {
             setUser(user.data())
-            this.setState({ ...INITIAL_STATE })
-            this.props.history.push(ROUTES.PROFILE)
+            setEmail('')
+            setPassword('')
+            setError(null)
+            history.push(ROUTES.PROFILE)
           })
           .catch(error => {
             console.log(error)
-            this.setState({ error })
+            setError(error)
           })
       })
       .catch(error => {
         console.log(error)
-        this.setState({ error })
+        setError(error)
       })
 
     event.preventDefault()
   }
 
-  onChange = event => {
-    this.setState({ [event.target.name]: event.target.value })
-  }
+  const isInvalid = email === '' || password === ''
 
-  render() {
-    const { email, password, error } = this.state
-    const isInvalid = email === '' || password === ''
+  return(
+    <form onSubmit={onSubmit}>
+      <input
+        name="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        type="email"
+        placeholder="Email address"
+      />
+      <input
+        name="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        type="text"
+        placeholder="Password"
+      />
+      <button disabled={isInvalid} type="submit">
+        Sign In
+      </button>
 
-    return(
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="email"
-          placeholder="Email address"
-        />
-        <input
-          name="password"
-          value={password}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Password"
-        />
-        <button disabled={isInvalid} type="submit">
-          Sign In
-        </button>
-
-        {error &&
-        <p>{error.message}</p>
-        }
-      </form>
-    )
-  }
+      {error &&
+      <p>{error.message}</p>
+      }
+    </form>
+  )
 }
 
-const mapDispatchToProps = dispatch => ({
-  setUser: user => dispatch(setUserFromDB(user))
-})
-
 export default compose(
-  connect(null, mapDispatchToProps),
   withRouter,
   withFirebase,
 )(SignInForm)
