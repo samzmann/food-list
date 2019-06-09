@@ -4,14 +4,15 @@ import { withFirebase } from '../Firebase'
 import AuthUserContext from '../Session/context'
 import ReviewCard from '../ReviewCard'
 
-const ReviewList = (props) => {
+const ReviewList = ({ firebase }) => {
   const [loading, setLoading] = useState(true)
   const [reviews, setReviews] = useState([])
   const authUser = useContext(AuthUserContext)
 
   useEffect(() => {
     console.log('mount')
-    props.firebase.getReviewsByUserId(authUser.uid)
+    firebase
+      .getReviewsByUserId(authUser.uid)
       .then(snapshot => {
         setReviews(snapshot.docs)
         setLoading(false)
@@ -32,6 +33,4 @@ const ReviewList = (props) => {
   )
 }
 
-export default compose(
-  withFirebase,
-)(ReviewList)
+export default compose(withFirebase)(ReviewList)
