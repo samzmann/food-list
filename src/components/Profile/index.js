@@ -9,7 +9,7 @@ const Profile = () => (
         <h3>Profile</h3>
         <p>Account: {authUser.email}</p>
         <h4>Your reviews:</h4>
-        <ReviewList/>
+        <ReviewList />
       </div>
     )}
   </AuthUserContext.Consumer>
