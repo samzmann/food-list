@@ -1,35 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { withRouter } from 'react-router-dom'
 import moment from 'moment'
 import { compose } from 'recompose'
 import { withFirebase } from '../Firebase'
 
-const INITIAL_STATE = {
-  title: '',
-  restaurantName: '',
-  date: moment().format('YYYY-MM-DD'),
-  description: '',
-  loading: false,
-  error: null,
-}
+const ReviewForm = (props) => {
+  const [title, setTitle] = useState('')
+  const [restaurantName, setRestaurantName] = useState('')
+  const [date, setDate] = useState(moment().format('YYYY-MM-DD'))
+  const [description, setDescription] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-class ReviewForm extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { ...INITIAL_STATE }
-  }
-
-  onChange = event => {
-    this.setState({ [event.target.name]: event.target.value })
-  }
-
-  onSubmit = (event) => {
+  const onSubmit = (event) => {
     event.preventDefault()
 
-    const { title, restaurantName, date, description } = this.state
-    const { firebase, authUser } = this.props
+    const { firebase, authUser } = props
 
-    this.setState({ loading: true, error: null })
+    setLoading(true)
+    setError(false)
 
     const newReview = {
       userId: authUser.uid,
@@ -42,71 +31,73 @@ class ReviewForm extends React.Component {
     firebase.createReview(newReview)
       .then(doc => {
         console.log(doc)
-        this.setState({ ...INITIAL_STATE })
+        setTitle('')
+        setRestaurantName('')
+        setDate(moment().format('YYYY-MM-DD'))
+        setDescription('')
+        setLoading(false)
+        setError(null)
       })
       .catch(error => {
         console.log(error)
-        this.setState({ loading: false, error: 'There was some sort of error 😵' })
+        setLoading(false)
+        setError('There was some sort of error 😵')
       })
   }
 
-  render() {
-    const { title, restaurantName, date, description, error } = this.state
-    const isInvalid = title === '' || restaurantName === '' || description === ''
+  const isInvalid = title === '' || restaurantName === '' || description === ''
 
-    return(
-      <form
-        onSubmit={this.onSubmit}
-        style={{ display: 'flex', flex: 1, flexDirection: 'column' }}
-      >
+  return(
+    <form
+      onSubmit={onSubmit}
+      style={{ display: 'flex', flex: 1, flexDirection: 'column' }}
+    >
 
-        <label>Title</label>
-        <input
-          name="title"
-          value={title}
-          onChange={this.onChange}
-          type="text"
-        />
-        <br/>
+      <label>Title</label>
+      <input
+        name="title"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        type="text"
+      />
+      <br/>
 
-        <label>Restaurant name</label>
-        <input
-          name="restaurantName"
-          value={restaurantName}
-          onChange={this.onChange}
-          type="text"
-        />
-        <br/>
+      <label>Restaurant name</label>
+      <input
+        name="restaurantName"
+        value={restaurantName}
+        onChange={e => setRestaurantName(e.target.value)}
+        type="text"
+      />
+      <br/>
 
-        <label>Date</label>
-        <input
-          name="date"
-          value={date}
-          onChange={this.onChange}
-          type="date"
-        />
-        <br/>
+      <label>Date</label>
+      <input
+        name="date"
+        value={date}
+        onChange={e => setDate(e.target.value)}
+        type="date"
+      />
+      <br/>
 
-        <label>Description</label>
-        <textarea
-          name="description"
-          value={description}
-          onChange={this.onChange}
-          type="text"
-        />
-        <br/>
+      <label>Description</label>
+      <textarea
+        name="description"
+        value={description}
+        onChange={e => setDescription(e.target.value)}
+      />
+      <br/>
 
-        <button disabled={isInvalid} type="submit">
-          Sign In
-        </button>
+      <button disabled={isInvalid} type="submit">
+        Sign In
+      </button>
 
-        {error &&
-          <p>{error}</p>
-        }
+      {error &&
+        <p>{error}</p>
+      }
 
-      </form>
-    )
-  }
+    </form>
+  )
 
 }
 
