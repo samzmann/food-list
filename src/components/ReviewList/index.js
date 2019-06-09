@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { compose } from 'recompose'
 import { withFirebase } from '../Firebase'
 import AuthUserContext from '../Session/context'
+import ReviewCard from '../ReviewCard'
 
 const ReviewList = (props) => {
   const [loading, setLoading] = useState(true)
@@ -24,12 +25,9 @@ const ReviewList = (props) => {
   return (
     <div>
       <p>here are some reviews</p>
-      {reviews.map(r => {
-        const review = r.data()
-        console.log(review)
-        // return <ReviewCard review={review} />
-      })
-      }
+      {reviews.map(reviewDocument => (
+        <ReviewCard review={reviewDocument.data()} />
+      ))}
     </div>
   )
 }
