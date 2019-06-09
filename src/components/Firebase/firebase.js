@@ -44,6 +44,8 @@ class Firebase {
 
     createReview = review => this.db.collection('reviews').add(review)
 
+    getReviewsByUserId = uid => this.db.collection('reviews').where('userId', '==', uid).get()
+
 }
 
 export default Firebase
